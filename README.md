@@ -1,2 +1,1 @@
-stringology
-===========
+Various string-related algorithms.
