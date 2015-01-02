@@ -13,7 +13,7 @@
 #include "algorithms.h"
 #include "debug_print.h"
 
-typedef void (*TMatcher)(const std::string& needle, const std::string& haystack, std::vector<size_t>& answer);
+using TMatcher = decltype(&ALGO(Naive));
 
 struct TBenchmarkData {
 	std::string AlgoName;
@@ -45,9 +45,9 @@ std::string ReadStringFromFile(const char* fileName) {
 	return result;
 }
 
-double MeasureTime(const std::string& matcherName, const TMatcher& matcher, const std::string& needle, const std::string& haystack, std::vector<size_t>& result) {
+double MeasureTime(const std::string& matcherName, TMatcher& matcher, const std::string& needle, const std::string& haystack, std::vector<size_t>& result) {
 	clock_t start = clock();
-	matcher(needle, haystack, result);
+	matcher(needle, haystack, needle.size(), haystack.size(), result);
 	clock_t end = clock();
 	return static_cast<double>(end - start) / CLOCKS_PER_SEC * 1000;
 }
@@ -70,8 +70,9 @@ int main(int argc, char** argv) {
 	const size_t ITERATION_COUNT = std::stoll(argv[3]);
 
 	TBenchmarkData benchmarkDatas[] = {
-		{ "bruteforce", MatchNaively },
-		{ "KMP", MatchWithKMP },
+		{ "Bruteforce", ALGO(Naive) },
+		{ "Knuth-Morris-Pratt", ALGO(KnuthMorrisPratt) },
+		{ "Boyer-Moore-Horspool", ALGO(BoyerMooreHorspool) },
 	};
 
 	std::vector<size_t> matchCounts;
@@ -80,7 +81,7 @@ int main(int argc, char** argv) {
 		std::string needle(haystack.substr(randomPos, NEEDLE_SIZE));
 
 		std::vector<size_t> correctResult;
-		MatchNaively(needle, haystack, correctResult);
+		ALGO(Naive)(needle, haystack, needle.size(), haystack.size(), correctResult);
 		matchCounts.push_back(correctResult.size());
 
 		for (auto& bd: benchmarkDatas) {

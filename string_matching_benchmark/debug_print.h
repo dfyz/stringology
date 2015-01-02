@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 
-#define DEBUG 0
+#define DEBUG 1
 
 template<typename T>
 void DebugPrint(const std::string& name, const T& t) {

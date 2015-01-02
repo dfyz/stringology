@@ -1,10 +1,11 @@
 #include "algorithms.h"
 #include "debug_print.h"
 
-void MatchNaively(const std::string& needle, const std::string& haystack, std::vector<size_t>& answer) {
-	size_t n = haystack.length();
-	size_t m = needle.length();
+#include <limits>
 
+#define DEFINE_ALGO(name) DECLARE_ALGO(name)
+
+DEFINE_ALGO(Naive) {
 	const size_t maxHaystackPos = n - m;
 	for (size_t start = 0; start <= maxHaystackPos; start++) {
 		size_t matched = 0;
@@ -17,10 +18,7 @@ void MatchNaively(const std::string& needle, const std::string& haystack, std::v
 	}
 }
 
-void MatchWithKMP(const std::string& needle, const std::string& haystack, std::vector<size_t>& answer) {
-	const size_t n = haystack.length();
-	const size_t m = needle.length();
-
+DEFINE_ALGO(KnuthMorrisPratt) {
 	std::vector<ssize_t> borders(m + 1);
 	borders[0] = -1;
 
@@ -50,3 +48,26 @@ void MatchWithKMP(const std::string& needle, const std::string& haystack, std::v
 		}
 	}
 }
+
+DEFINE_ALGO(BoyerMooreHorspool) {
+	std::vector<size_t> shiftsByChar(std::numeric_limits<char>::max(), m);
+	for (size_t i = 0; i + 1 < m; i++) {
+		shiftsByChar[needle[i]] = m - i - 1;
+	}
+
+	size_t haystackPos = m - 1;
+	while (haystackPos < n) {
+		size_t i = haystackPos;
+		size_t j = m;
+		while (j > 0 && (haystack[i] == needle[j - 1])) {
+			i--;
+			j--;
+		}
+		if (j == 0) {
+			answer.push_back(i + 1);
+		}
+		haystackPos += shiftsByChar[haystack[haystackPos]];
+	}
+}
+
+#undef DEFINE_ALGO
