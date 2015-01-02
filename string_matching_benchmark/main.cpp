@@ -11,6 +11,7 @@
 #include <ctime>
 
 #include "algorithms.h"
+#include "debug_print.h"
 
 typedef void (*TMatcher)(const std::string& needle, const std::string& haystack, std::vector<size_t>& answer);
 
@@ -75,7 +76,7 @@ int main(int argc, char** argv) {
 
 	std::vector<size_t> matchCounts;
 	for (size_t iter = 0; iter < ITERATION_COUNT; iter++) {
-		auto randomPos = rand() % haystack.length();
+		auto randomPos = rand() % (haystack.length() - NEEDLE_SIZE + 1);
 		std::string needle(haystack.substr(randomPos, NEEDLE_SIZE));
 
 		std::vector<size_t> correctResult;
@@ -86,8 +87,10 @@ int main(int argc, char** argv) {
 			std::vector<size_t> result;
 			auto elapsed = MeasureTime(bd.AlgoName, bd.Matcher, needle, haystack, result);
 			bd.Times.push_back(elapsed);
-			if (!std::equal(correctResult.begin(), correctResult.end(), result.begin())) {
-				throw std::runtime_error(bd.AlgoName + " gives incorrect results");
+
+			if (correctResult != result) {
+				std::cerr << bd.AlgoName + " gives incorrect results for needle '" << needle << "'" << std::endl;
+				return 1;
 			}
 		}
 	}

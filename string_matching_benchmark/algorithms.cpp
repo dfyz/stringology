@@ -5,7 +5,8 @@ void MatchNaively(const std::string& needle, const std::string& haystack, std::v
 	size_t n = haystack.length();
 	size_t m = needle.length();
 
-	for (size_t start = 0; start + m <= n; start++) {
+	const size_t maxHaystackPos = n - m;
+	for (size_t start = 0; start <= maxHaystackPos; start++) {
 		size_t matched = 0;
 		while (matched < m && haystack[start + matched] == needle[matched]) {
 			matched++;
@@ -35,10 +36,8 @@ void MatchWithKMP(const std::string& needle, const std::string& haystack, std::v
 	ssize_t needlePrefixSize = 0;
 	const ssize_t maxHaystackPos = n - m;
 	while (haystackPos <= maxHaystackPos) {
-		ssize_t j = haystackPos + needlePrefixSize;
-		while (needle[needlePrefixSize] == haystack[j]) {
+		while (needlePrefixSize < m && (haystack[haystackPos + needlePrefixSize] == needle[needlePrefixSize])) {
 			needlePrefixSize++;
-			j++;
 		}
 		if (needlePrefixSize == m) {
 			answer.push_back(haystackPos);
