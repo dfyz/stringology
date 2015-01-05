@@ -7,7 +7,7 @@
 
 #include <string>
 
-TEST_CASE("CalcBorders()") {
+TEST_CASE("border array") {
 	{
 		std::string pattern("abacaba");
 		std::vector<TPos> borders { -1, 0, 0, 1, 0, 1, 2, 3 };
@@ -33,7 +33,7 @@ TEST_CASE("CalcBorders()") {
 	}
 }
 
-TEST_CASE("CalcFundamentalPreprocessing()") {
+TEST_CASE("fundamental preprocessing (aka z-function)") {
 	{
 		std::string pattern("aabcaabxaaz");
 		std::vector<TPos> fp { 0, 1, 0, 0, 3, 1, 0, 0, 2, 1, 0 };
