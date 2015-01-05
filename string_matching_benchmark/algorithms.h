@@ -12,3 +12,4 @@
 DECLARE_ALGO(Naive);
 DECLARE_ALGO(KnuthMorrisPratt);
 DECLARE_ALGO(BoyerMooreHorspool);
+DECLARE_ALGO(BoyerMoore);

@@ -3,6 +3,7 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
+#include "algorithms.h"
 #include "preprocessing.h"
 
 #include <string>
@@ -70,4 +71,54 @@ TEST_CASE("fundamental preprocessing (aka z-function)") {
 		REQUIRE(CalcFundamentalPreprocessing(pattern.begin(), pattern.end()) == fp);
 	}
 
+}
+
+TEST_CASE("Boyer-Moore shift tables for the good suffix rule") {
+	{
+		std::string pattern("cabdabdab");
+		std::vector<TPos> prevSuffix { -1, -1, -1, -1, 5, -1, -1, 2, -1 };
+		std::vector<TPos> suffixBorders { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+		std::vector<TPos> actualPrevSuffix;
+		std::vector<TPos> actualSuffixBorders;
+		CalcBoyerMooreShiftTables(pattern.begin(), pattern.end(), actualPrevSuffix, actualSuffixBorders);
+		REQUIRE(actualPrevSuffix == prevSuffix);
+		REQUIRE(actualSuffixBorders == suffixBorders);
+	}
+
+	{
+		std::string pattern("abacaba");
+		std::vector<TPos> prevSuffix { -1, -1, -1, -1, 2, -1, 4 };
+		std::vector<TPos> suffixBorders { 3, 3, 3, 3, 3, 1, 1 };
+
+		std::vector<TPos> actualPrevSuffix;
+		std::vector<TPos> actualSuffixBorders;
+		CalcBoyerMooreShiftTables(pattern.begin(), pattern.end(), actualPrevSuffix, actualSuffixBorders);
+		REQUIRE(actualPrevSuffix == prevSuffix);
+		REQUIRE(actualSuffixBorders == suffixBorders);
+	}
+
+	{
+		std::string pattern("cababababa");
+		std::vector<TPos> prevSuffix { -1, -1, -1, 7, -1, 5, -1, 3, -1, 1 };
+		std::vector<TPos> suffixBorders { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+		std::vector<TPos> actualPrevSuffix;
+		std::vector<TPos> actualSuffixBorders;
+		CalcBoyerMooreShiftTables(pattern.begin(), pattern.end(), actualPrevSuffix, actualSuffixBorders);
+		REQUIRE(actualPrevSuffix == prevSuffix);
+		REQUIRE(actualSuffixBorders == suffixBorders);
+	}
+}
+
+TEST_CASE("Boyer-Moore") {
+	{
+		std::string needle("example");
+		std::string haystack("here is a simple example lol");
+		std::vector<TPos> result { 17 };
+
+		std::vector<TPos> actualResult;
+		ALGO(BoyerMoore)(needle, haystack, needle.length(), haystack.length(), actualResult);
+		REQUIRE(actualResult == result);
+	}
 }

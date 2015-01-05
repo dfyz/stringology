@@ -73,6 +73,7 @@ int main(int argc, char** argv) {
 		{ "Bruteforce", ALGO(Naive) },
 		{ "Knuth-Morris-Pratt", ALGO(KnuthMorrisPratt) },
 		{ "Boyer-Moore-Horspool", ALGO(BoyerMooreHorspool) },
+		{ "Boyer-Moore", ALGO(BoyerMoore) },
 	};
 
 	std::vector<size_t> matchCounts;

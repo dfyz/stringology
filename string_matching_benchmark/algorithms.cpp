@@ -40,29 +40,68 @@ DEFINE_ALGO(KnuthMorrisPratt) {
 	}
 }
 
+static TPos GetMatchingSuffixSize(const std::string& haystack, const std::string& needle, TPos haystackPos, TPos& suffixStart) {
+	TPos result = 0;
+	TPos i = needle.length() - 1;
+	while (i >= 0 && (haystack[haystackPos] == needle[i])) {
+		haystackPos--;
+		i--;
+		result++;
+	}
+	suffixStart = haystackPos + 1;
+	return result;
+}
+
 DEFINE_ALGO(BoyerMooreHorspool) {
-	std::vector<size_t> shiftsByChar(std::numeric_limits<char>::max(), m);
-	for (size_t i = 0; i + 1 < m; i++) {
+	std::vector<TPos> shiftsByChar(std::numeric_limits<char>::max(), m);
+	for (TPos i = 0; i + 1 < m; i++) {
 		shiftsByChar[needle[i]] = m - i - 1;
 	}
 
-	size_t haystackPos = m - 1;
+	TPos haystackPos = m - 1;
 	while (haystackPos < n) {
-		size_t i = haystackPos;
-		size_t j = m;
-		while (j > 0 && (haystack[i] == needle[j - 1])) {
-			i--;
-			j--;
-		}
-		if (j == 0) {
-			answer.push_back(i + 1);
+		TPos suffixStart;
+		TPos matched = GetMatchingSuffixSize(haystack, needle, haystackPos, suffixStart);
+		if (matched == m) {
+			answer.push_back(suffixStart);
 		}
 		haystackPos += shiftsByChar[haystack[haystackPos]];
 	}
 }
 
 DEFINE_ALGO(BoyerMoore) {
+	std::vector<TPos> rightmostOccurence(std::numeric_limits<char>::max(), m);
+	for (TPos i = 0; i < m; i++) {
+		rightmostOccurence[needle[i]] = i;
+	}
 
+	std::vector<TPos> prevSuffix;
+	std::vector<TPos> suffixBorders;
+	CalcBoyerMooreShiftTables(needle.begin(), needle.end(), prevSuffix, suffixBorders);
+
+	TPos haystackPos = m - 1;
+	while (haystackPos < n) {
+		TPos suffixStart;
+		TPos matched = GetMatchingSuffixSize(haystack, needle, haystackPos, suffixStart);
+		TPos scrollTo = -1;
+		if (matched == m) {
+			answer.push_back(suffixStart);
+			if (m == 1) {
+				++haystackPos;
+			} else {
+				haystackPos += m - prevSuffix[1];
+			}
+		} else {
+			TPos mismatchPosInNeedle = m - matched - 1;
+			TPos badCharacterShift = std::max<TPos>(1, mismatchPosInNeedle - rightmostOccurence[haystack[suffixStart - 1]]);
+
+			TPos lastMatchPosInNeedle = mismatchPosInNeedle + 1;
+			TPos prevSuffixPos = (matched == 0) ? prevSuffix[lastMatchPosInNeedle] : -1;
+			TPos goodSuffixShift = (prevSuffixPos != -1) ? (m - 1 - prevSuffixPos) : (m - suffixBorders[lastMatchPosInNeedle]);
+
+			haystackPos += std::max(badCharacterShift, goodSuffixShift);
+		}
+	}
 }
 
 #undef DEFINE_ALGO
