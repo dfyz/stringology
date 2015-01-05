@@ -45,7 +45,7 @@ std::string ReadStringFromFile(const char* fileName) {
 	return result;
 }
 
-double MeasureTime(const std::string& matcherName, TMatcher& matcher, const std::string& needle, const std::string& haystack, std::vector<size_t>& result) {
+double MeasureTime(const std::string& matcherName, TMatcher& matcher, const std::string& needle, const std::string& haystack, std::vector<TPos>& result) {
 	clock_t start = clock();
 	matcher(needle, haystack, needle.size(), haystack.size(), result);
 	clock_t end = clock();
@@ -81,12 +81,12 @@ int main(int argc, char** argv) {
 		std::uniform_int_distribution<size_t> randomPos(0, haystack.length() - NEEDLE_SIZE);
 		std::string needle(haystack.substr(randomPos(gen), NEEDLE_SIZE));
 
-		std::vector<size_t> correctResult;
+		std::vector<TPos> correctResult;
 		ALGO(Naive)(needle, haystack, needle.size(), haystack.size(), correctResult);
 		matchCounts.push_back(correctResult.size());
 
 		for (auto& bd: benchmarkDatas) {
-			std::vector<size_t> result;
+			std::vector<TPos> result;
 			auto elapsed = MeasureTime(bd.AlgoName, bd.Matcher, needle, haystack, result);
 			bd.Times.push_back(elapsed);
 

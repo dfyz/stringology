@@ -1,18 +1,20 @@
 #pragma once
 
+#include "common.h"
+
 #include <algorithm>
 #include <string>
 #include <vector>
 
 template<typename TIter>
-std::vector<ptrdiff_t> CalcBorders(TIter begin, TIter end) {
-	size_t m = std::distance(begin, end);
-	std::vector<ptrdiff_t> result(m + 1);
+std::vector<TPos> CalcBorders(TIter begin, TIter end) {
+	TPos m = std::distance(begin, end);
+	std::vector<TPos> result(m + 1);
 
 	result[0] = -1;
-	ptrdiff_t borderSize = -1;
+	TPos borderSize = -1;
 
-	for (size_t i = 1; i <= m; i++) {
+	for (TPos i = 1; i <= m; i++) {
 		while (borderSize >= 0 && begin[borderSize] != begin[i - 1]) {
 			borderSize = result[borderSize];
 		}
@@ -23,19 +25,19 @@ std::vector<ptrdiff_t> CalcBorders(TIter begin, TIter end) {
 }
 
 template<typename TIter>
-std::vector<size_t> CalcFundamentalPreprocessing(TIter begin, TIter end) {
-	size_t m = std::distance(begin, end);
-	std::vector<size_t> result(m, 0);
+std::vector<TPos> CalcFundamentalPreprocessing(TIter begin, TIter end) {
+	TPos m = std::distance(begin, end);
+	std::vector<TPos> result(m, 0);
 
-	size_t boxLeft = 0;
-	size_t boxRight = 0;
-	for (size_t i = 1; i < m; i++) {
-		size_t matched = (i > boxRight) ? 0 : std::min(result[i - boxLeft], boxRight - i + 1);
+	TPos boxLeft = 0;
+	TPos boxRight = 0;
+	for (TPos i = 1; i < m; i++) {
+		TPos matched = (i > boxRight) ? 0 : std::min(result[i - boxLeft], boxRight - i + 1);
 		while ((begin + matched < end) && (begin[matched] == begin[i + matched])) {
 			++matched;
 		}
 		if (matched > 0) {
-			size_t newBoxRight = i + matched - 1;
+			TPos newBoxRight = i + matched - 1;
 			if (newBoxRight > boxRight) {
 				boxLeft = i;
 				boxRight = i + matched - 1;
