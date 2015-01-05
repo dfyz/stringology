@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <random>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -76,9 +77,10 @@ int main(int argc, char** argv) {
 	};
 
 	std::vector<size_t> matchCounts;
+	std::default_random_engine gen;
 	for (size_t iter = 0; iter < ITERATION_COUNT; iter++) {
-		auto randomPos = rand() % (haystack.length() - NEEDLE_SIZE + 1);
-		std::string needle(haystack.substr(randomPos, NEEDLE_SIZE));
+		std::uniform_int_distribution<size_t> randomPos(0, haystack.length() - NEEDLE_SIZE);
+		std::string needle(haystack.substr(randomPos(gen), NEEDLE_SIZE));
 
 		std::vector<size_t> correctResult;
 		ALGO(Naive)(needle, haystack, needle.size(), haystack.size(), correctResult);
