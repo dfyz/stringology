@@ -35,8 +35,11 @@ std::vector<size_t> CalcFundamentalPreprocessing(TIter begin, TIter end) {
 			++matched;
 		}
 		if (matched > 0) {
-			boxLeft = i;
-			boxRight = i + matched - 1
+			size_t newBoxRight = i + matched - 1;
+			if (newBoxRight > boxRight) {
+				boxLeft = i;
+				boxRight = i + matched - 1;
+			}
 		}
 		result[i] = matched;
 	}
