@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
 	};
 
 	std::vector<size_t> matchCounts;
-	std::default_random_engine gen;
+	std::default_random_engine gen(std::random_device{}());
 	for (size_t iter = 0; iter < ITERATION_COUNT; iter++) {
 		std::uniform_int_distribution<size_t> randomPos(0, haystack.length() - NEEDLE_SIZE);
 		std::string needle(haystack.substr(randomPos(gen), NEEDLE_SIZE));
