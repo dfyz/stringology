@@ -12,7 +12,6 @@
 #include <ctime>
 
 #include "algorithms.h"
-#include "debug_print.h"
 
 using TMatcher = decltype(&ALGO(Naive));
 

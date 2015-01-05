@@ -1,5 +1,5 @@
 #include "algorithms.h"
-#include "debug_print.h"
+#include "preprocessing.h"
 
 #include <limits>
 
@@ -19,20 +19,11 @@ DEFINE_ALGO(Naive) {
 }
 
 DEFINE_ALGO(KnuthMorrisPratt) {
-	std::vector<ssize_t> borders(m + 1);
-	borders[0] = -1;
+	std::vector<ptrdiff_t> borders(CalcBorders(needle.begin(), needle.end()));
 
-	ssize_t borderSize = -1;
-	for (size_t i = 1; i <= m; i++) {
-		while (borderSize >= 0 && needle[borderSize] != needle[i - 1]) {
-			borderSize = borders[borderSize];
-		}
-		borders[i] = ++borderSize;
-	}
-
-	ssize_t haystackPos = 0;
-	ssize_t needlePrefixSize = 0;
-	const ssize_t maxHaystackPos = n - m;
+	ptrdiff_t haystackPos = 0;
+	ptrdiff_t needlePrefixSize = 0;
+	const ptrdiff_t maxHaystackPos = n - m;
 	while (haystackPos <= maxHaystackPos) {
 		while (needlePrefixSize < m && (haystack[haystackPos + needlePrefixSize] == needle[needlePrefixSize])) {
 			needlePrefixSize++;
@@ -40,7 +31,7 @@ DEFINE_ALGO(KnuthMorrisPratt) {
 		if (needlePrefixSize == m) {
 			answer.push_back(haystackPos);
 		}
-		const ssize_t shift = needlePrefixSize - borders[needlePrefixSize];
+		const ptrdiff_t shift = needlePrefixSize - borders[needlePrefixSize];
 		haystackPos += shift;
 		needlePrefixSize -= shift;
 		if (needlePrefixSize < 0) {
@@ -68,6 +59,10 @@ DEFINE_ALGO(BoyerMooreHorspool) {
 		}
 		haystackPos += shiftsByChar[haystack[haystackPos]];
 	}
+}
+
+DEFINE_ALGO(BoyerMoore) {
+
 }
 
 #undef DEFINE_ALGO
