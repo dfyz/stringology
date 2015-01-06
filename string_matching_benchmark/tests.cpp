@@ -141,4 +141,14 @@ TEST_CASE("Boyer-Moore") {
 		ALGO(BoyerMoore)(needle, haystack, needle.length(), haystack.length(), actualResult);
 		REQUIRE(actualResult == result);
 	}
+
+	{
+		std::string needle("abaababaabaa");
+		std::string haystack("abaabbbaababaabaabaababaabaa");
+		std::vector<TPos> result { 16 };
+
+		std::vector<TPos> actualResult;
+		ALGO(BoyerMoore)(needle, haystack, needle.length(), haystack.length(), actualResult);
+		REQUIRE(actualResult == result);
+	}
 }
