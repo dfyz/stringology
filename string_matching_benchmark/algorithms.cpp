@@ -83,7 +83,6 @@ DEFINE_ALGO(BoyerMoore) {
 	while (haystackPos < n) {
 		TPos suffixStart;
 		TPos matched = GetMatchingSuffixSize(haystack, needle, haystackPos, suffixStart);
-		TPos scrollTo = -1;
 		if (matched == m) {
 			answer.push_back(suffixStart);
 			haystackPos += (m > 1) ? (m - suffixBorders[1]) : 1;
