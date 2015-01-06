@@ -70,7 +70,7 @@ DEFINE_ALGO(BoyerMooreHorspool) {
 }
 
 DEFINE_ALGO(BoyerMoore) {
-	std::vector<TPos> rightmostOccurence(std::numeric_limits<char>::max(), m);
+	std::vector<TPos> rightmostOccurence(std::numeric_limits<char>::max(), -1);
 	for (TPos i = 0; i < m; i++) {
 		rightmostOccurence[needle[i]] = i;
 	}
@@ -86,18 +86,18 @@ DEFINE_ALGO(BoyerMoore) {
 		TPos scrollTo = -1;
 		if (matched == m) {
 			answer.push_back(suffixStart);
-			if (m == 1) {
-				++haystackPos;
-			} else {
-				haystackPos += m - prevSuffix[1];
-			}
+			haystackPos += (m > 1) ? (m - suffixBorders[1]) : 1;
 		} else {
 			TPos mismatchPosInNeedle = m - matched - 1;
 			TPos badCharacterShift = std::max<TPos>(1, mismatchPosInNeedle - rightmostOccurence[haystack[suffixStart - 1]]);
 
-			TPos lastMatchPosInNeedle = mismatchPosInNeedle + 1;
-			TPos prevSuffixPos = (matched == 0) ? prevSuffix[lastMatchPosInNeedle] : -1;
-			TPos goodSuffixShift = (prevSuffixPos != -1) ? (m - 1 - prevSuffixPos) : (m - suffixBorders[lastMatchPosInNeedle]);
+			TPos goodSuffixShift = 0;
+			if (matched > 0) {
+				TPos lastMatchPosInNeedle = mismatchPosInNeedle + 1;
+				TPos prevSuffixPos = prevSuffix[lastMatchPosInNeedle];
+				TPos suffixBorderLength = suffixBorders[lastMatchPosInNeedle];
+				goodSuffixShift = (prevSuffixPos != -1) ? (m - 1 - prevSuffixPos) : (m - suffixBorderLength);
+			}
 
 			haystackPos += std::max(badCharacterShift, goodSuffixShift);
 		}
